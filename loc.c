@@ -26,11 +26,16 @@ loc_count(char *file)
 {
 	static char *buf;
 	static size_t bufsz;
-	
-	char *ch;
+
+	char *c;
+	char *lc;
 	ssize_t len;
-	int64_t lines_total;
-	
+
+	int64_t lines_blank = 0;
+	int64_t lines_code = 0;
+	int64_t lines_comment = 0;
+	int64_t lines_total = 0;
+
 	if (file) {
 		if ((fd = open(file, O_RDONLY, 0)) == -1) {
 			warn("%s", file);
@@ -42,14 +47,40 @@ loc_count(char *file)
 	    (buf = realloc(buf, MAXBSIZE)) == NULL) {
 		err(1, NULL);
 	}
-	
-	while ((len = read(fd, buf, MAXBSIZE)) > 0 ) {
-		for (ch = buf; len--; ++ch)
-			if (*ch == '\n')
+
+	int comment = 0;
+	while ((len = read(fd, buf, MAXBSIZE)) > 0) {
+		for (c = buf; len--; ++c) {
+			if (comment > 0) {
+				if (*c == '/' && *lc == '*') {
+				        comment = 0;
+					++lines_comment;
+				}
+			}
+
+			if (!comment && *c == '*' && *lc == '/')
+				comment = 1;
+
+			if (*c == '\n') {
+				if (comment > 0)
+					++lines_comment;
+
+				if (*lc == '\n')
+					++lines_blank;
+
+				if (*lc != '\n' && !comment)
+					++lines_code;
+
 				++lines_total;
+			}
+
+			lc = c;
+		}
 	}
-	
-	printf("total: %d\n", lines_total);
+
+	printf("File Extension\tBlank\tComment\tCode\tTotal\n");
+	printf("%-15s\t%lld\t%lld\t%lld\t%lld\n", file,
+	       lines_blank, lines_comment, lines_code, lines_total);
 
 	return 0;
 }
@@ -57,12 +88,11 @@ loc_count(char *file)
 int
 main(int argc, char **argv)
 {
-	if (pledge("stdio rpath", NULL) == -1)
-		err(1, "pledge");
-
 	int opt;
-
 	setlocale(LC_CTYPE, "");
+
+	if (pledge("rpath stdio", NULL) == -1)
+		err(1, "pledge");
 
 	while ((opt = getopt(argc, argv, "bcCt")) != -1) {
 		switch (opt) {
@@ -76,13 +106,11 @@ main(int argc, char **argv)
 	argv += optind;
 	argc -= optind;
 
-	if (!*argv) {
-		loc_count(NULL);
-	} else {
+	if (argc > 0) {
 		do {
 			loc_count(*argv);
 		} while(*++argv);
 	}
-	
+
 	return 0;
 }
