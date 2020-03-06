@@ -1,5 +1,6 @@
-/* loc.c - Show statistics about lines of code.
+/* loc.c - Summarize the lines of code within a directory
  *
+ * Copyright 2020 Johnathan C. Maudlin <jcmdln@gmail.com>
  */
 
 #include <sys/param.h>
@@ -12,75 +13,67 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-extern char *__progname;
-
-int fd;
+char *__progname;
 
 int opt_blank;
 int opt_code;
 int opt_comment;
-int opt_total;
 
-static int
-loc_count(char *file)
+struct loc {
+	int64_t blank;
+	int64_t code;
+	int64_t comment;
+};
+
+struct lang {
+	char *name;
+	int64_t files;
+	struct loc lines;
+};
+
+struct lang C = {"C", 0, {0, 0, 0}};
+struct lang Makefile = {"Makefile", 0, {0, 0, 0}};
+
+int
+results()
 {
-	static char *buf;
-	static size_t bufsz;
+	printf("%-24s  %10s  %10s  %10s  %10s\n",
+	       "language", "files", "blank", "comment", "code");
+	printf("%-24s  %10lld  %10lld  %10lld  %10lld\n",
+	       C.name, C.files, C.lines.blank, C.lines.comment, C.lines.code);
+	return 0;
+}
 
-	char *c;
-	char *lc;
+int
+lang_c(int fd, char *buf)
+{
+	char *ch = ""; // character
+	char *lc = ""; // last character
+	int in_comment = 0;
 	ssize_t len;
 
-	int64_t lines_blank = 0;
-	int64_t lines_code = 0;
-	int64_t lines_comment = 0;
-	int64_t lines_total = 0;
-
-	if (file) {
-		if ((fd = open(file, O_RDONLY, 0)) == -1) {
-			warn("%s", file);
-			return 1;
-		}
-	}
-
-	if (bufsz < MAXBSIZE &&
-	    (buf = realloc(buf, MAXBSIZE)) == NULL) {
-		err(1, NULL);
-	}
-
-	int comment = 0;
 	while ((len = read(fd, buf, MAXBSIZE)) > 0) {
-		for (c = buf; len--; ++c) {
-			if (comment > 0) {
-				if (*c == '/' && *lc == '*') {
-				        comment = 0;
-					++lines_comment;
-				}
-			}
+		for (ch = buf; len--; ++ch) {
+			if (*lc == '/' && *ch == '*')
+				in_comment = 1;
 
-			if (!comment && *c == '*' && *lc == '/')
-				comment = 1;
-
-			if (*c == '\n') {
-				if (comment > 0)
-					++lines_comment;
-
+			if (*ch == '\n') {
 				if (*lc == '\n')
-					++lines_blank;
-
-				if (*lc != '\n' && !comment)
-					++lines_code;
-
-				++lines_total;
+					++C.lines.blank;
+				if (in_comment)
+					++C.lines.comment;
+				if (!in_comment && *lc != '\n')
+					++C.lines.code;
 			}
 
-			lc = c;
+			if (in_comment && *lc == '*' && *ch == '/') {
+				in_comment = 0;
+				++C.lines.comment;
+			}
+
+			lc = ch;
 		}
 	}
-
-	printf("File Extension\tBlank\tComment\tCode\tTotal\n");
-	printf("%-15s\t%lld\t%lld\t%lld\t%lld\n", file,
-	       lines_blank, lines_comment, lines_code, lines_total);
 
 	return 0;
 }
@@ -88,7 +81,11 @@ loc_count(char *file)
 int
 main(int argc, char **argv)
 {
+	static char *buf;
+	static size_t bufsz;
+	int fd;
 	int opt;
+
 	setlocale(LC_CTYPE, "");
 
 	if (pledge("rpath stdio", NULL) == -1)
@@ -98,8 +95,8 @@ main(int argc, char **argv)
 		switch (opt) {
 		default:
 			fprintf(stderr,
-			    "usage: %s [-bcCht] [file ...]\n",
-			    __progname);
+				"usage: %s [-bcCht] [file ...]\n",
+				__progname);
 			return 1;
 		}
 	}
@@ -108,8 +105,20 @@ main(int argc, char **argv)
 
 	if (argc > 0) {
 		do {
-			loc_count(*argv);
+			if ((fd = open(*argv, O_RDONLY, 0)) == -1) {
+				warn("%s", *argv);
+				return 1;
+			}
+
+			if (bufsz < MAXBSIZE &&
+			    (buf = realloc(buf, MAXBSIZE)) == NULL) {
+				err(1, NULL);
+			}
+
+		        lang_c(fd, buf);
 		} while(*++argv);
+
+		results();
 	}
 
 	return 0;
