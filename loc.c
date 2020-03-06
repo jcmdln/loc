@@ -40,7 +40,8 @@ results()
 	printf("%-24s  %10s  %10s  %10s  %10s\n",
 	       "language", "files", "blank", "comment", "code");
 	printf("%-24s  %10lld  %10lld  %10lld  %10lld\n",
-	       C.name, C.files, C.lines.blank, C.lines.comment, C.lines.code);
+	       C.name, C.files, C.lines.blank, C.lines.comment,
+	       C.lines.code);
 	return 0;
 }
 
@@ -115,6 +116,7 @@ main(int argc, char **argv)
 				err(1, NULL);
 			}
 
+			++C.files;
 		        lang_c(fd, buf);
 		} while(*++argv);
 
