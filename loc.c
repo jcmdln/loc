@@ -1,4 +1,4 @@
-/* loc.c - Summarize the lines of code within a directory
+/* loc.c - Summarize the lines of code within a file or directory
  *
  * Copyright 2020 Johnathan C. Maudlin <jcmdln@gmail.com>
  */
@@ -11,69 +11,81 @@
 #include <locale.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <unistd.h>
 
 char *__progname;
 
-int opt_blank;
-int opt_code;
-int opt_comment;
+uint32_t opt_blank;
+uint32_t opt_code;
+uint32_t opt_comment;
 
 struct loc {
-	int64_t blank;
-	int64_t code;
-	int64_t comment;
+	uint64_t blank;
+	uint64_t code;
+	uint64_t comment;
+	uint64_t total;
 };
 
 struct lang {
 	char *name;
-	int64_t files;
+	uint64_t files;
 	struct loc lines;
 };
 
-struct lang C = {"C", 0, {0, 0, 0}};
-struct lang Makefile = {"Makefile", 0, {0, 0, 0}};
+struct lang C;
 
 int
 results()
 {
-	printf("%-24s  %10s  %10s  %10s  %10s\n",
+        printf("%-24s  %10s  %10s  %10s  %10s\n",
 	       "language", "files", "blank", "comment", "code");
-	printf("%-24s  %10lld  %10lld  %10lld  %10lld\n",
+	printf("%-24s  %10llu  %10llu  %10llu  %10llu\n",
 	       C.name, C.files, C.lines.blank, C.lines.comment,
 	       C.lines.code);
+
 	return 0;
 }
 
 int
 lang_c(int fd, char *buf)
 {
-	char *ch = ""; // character
+	char *ch; // character
 	char *lc = ""; // last character
-	int in_comment = 0;
+	uint in_comment = 0;
 	ssize_t len;
 
-	while ((len = read(fd, buf, MAXBSIZE)) > 0) {
+	C.name = "C";
+
+        if ((len = read(fd, buf, MAXBSIZE)) > 0) {
 		for (ch = buf; len--; ++ch) {
-			if (*lc == '/' && *ch == '*')
-				in_comment = 1;
-
-			if (*ch == '\n') {
-				if (*lc == '\n')
-					++C.lines.blank;
-				if (in_comment)
+			switch (*ch) {
+			case '\n':
+				if (in_comment) {
 					++C.lines.comment;
-				if (!in_comment && *lc != '\n')
-					++C.lines.code;
-			}
+				} else if (*lc == '\n') {
+					++C.lines.blank;
+				}
 
-			if (in_comment && *lc == '*' && *ch == '/') {
-				in_comment = 0;
-				++C.lines.comment;
+				++C.lines.total;
+				break;
+			case '*':
+				if (*lc == '/')
+					in_comment = 1;
+			case '/':
+				if (in_comment) {
+					if (*lc == '*') {
+						in_comment = 0;
+						++C.lines.comment;
+					}
+				}
 			}
 
 			lc = ch;
 		}
+
+		C.lines.code = ((C.lines.total - C.lines.blank)
+				- C.lines.comment);
 	}
 
 	return 0;
@@ -101,6 +113,7 @@ main(int argc, char **argv)
 			return 1;
 		}
 	}
+
 	argv += optind;
 	argc -= optind;
 
@@ -116,11 +129,19 @@ main(int argc, char **argv)
 				err(1, NULL);
 			}
 
-			++C.files;
-		        lang_c(fd, buf);
+			if (strstr(*argv, ".c") != NULL) {
+				lang_c(fd, buf);
+				++C.files;
+			} else {
+				printf("error: '%s' not implemented\n",
+				       *argv);
+			}
+
 		} while(*++argv);
 
-		results();
+		if (C.lines.total > 0) {
+			results();
+		}
 	}
 
 	return 0;
