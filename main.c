@@ -21,7 +21,7 @@ loc_results()
 		if (langs[i].files < 1 || langs[i].name == NULL)
 			continue;
 
-		printf("%-24s  %10llu  %10llu  %10llu  %10llu\n",
+		printf("%-24s  %10lu  %10lu  %10lu  %10lu\n",
 		       langs[i].name,
 		       langs[i].files,
 		       langs[i].lines.blank,
@@ -38,13 +38,15 @@ main(int argc, char **argv)
 {
 	static char *buffer;
 	static size_t buffer_size;
-	char *extension, *file_extension;
+	char *extension = "", *file_extension = "";
 	int fd, l, opt;
 
 	setlocale(LC_CTYPE, "");
 
+#if defined(__OpenBSD__)
 	if (pledge("rpath stdio", NULL) == -1)
 		err(1, "pledge");
+#endif
 
 	while ((opt = getopt(argc, argv, "bcCt")) != -1) {
 		switch (opt) {

@@ -2,6 +2,8 @@
 
 #include "loc.h"
 
+struct lang langs[2];
+
 int
 loc_init()
 {

@@ -10,9 +10,15 @@
 #include <stdlib.h>
 #include <unistd.h>
 
+#ifndef MAXBSIZE
+#define MAXBSIZE 8192
+#endif
 
-char *__progname;
+#ifndef uint32_t
+#include <stdint.h>
+#endif
 
+extern char *__progname;
 
 struct loc {
 	uint64_t blank;
@@ -31,7 +37,7 @@ struct lang {
 	struct loc lines;
 };
 
-struct lang langs[2];
+extern struct lang langs[2];
 
 int
 loc_init();

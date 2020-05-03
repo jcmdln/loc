@@ -21,17 +21,17 @@ loc_seek(char *ext)
 
 
 int
-loc_parse(int i, int fd, char *buf)
+loc_parse(int i, int fd, char *buffer)
 {
 	char *character;
 	char *previous = "";
 	uint in_comment = 0;
 	ssize_t len;
 
-	if ((len = read(fd, buf, MAXBSIZE)) > 0) {
+	if ((len = read(fd, buffer, MAXBSIZE)) > 0) {
 		++langs[i].files;
 
-		for (character = buf; len--; ++character) {
+		for (character = buffer; len--; ++character) {
 			switch (*character) {
 			case '\n':
 				if (in_comment) {
