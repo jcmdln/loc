@@ -1,6 +1,6 @@
 # Makefile
 
 PROG=	loc
-SRCS=	loc.c
+SRCS=	loc.h langs.c main.c parse.c
 
 .include <bsd.prog.mk>
