@@ -21,12 +21,21 @@ loc_results()
 		if (langs[i].files < 1 || langs[i].name == NULL)
 			continue;
 
+#if defined(__OpenBSD__)
+		printf("%-24s  %10llu  %10llu  %10llu  %10llu\n",
+		       langs[i].name,
+		       langs[i].files,
+		       langs[i].lines.blank,
+		       langs[i].lines.comment,
+		       langs[i].lines.code);
+#else
 		printf("%-24s  %10lu  %10lu  %10lu  %10lu\n",
 		       langs[i].name,
 		       langs[i].files,
 		       langs[i].lines.blank,
 		       langs[i].lines.comment,
 		       langs[i].lines.code);
+#endif
 	}
 
 	return 0;
