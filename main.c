@@ -21,7 +21,7 @@ loc_results()
 		if (langs[i].files < 1 || langs[i].name == NULL)
 			continue;
 
-#if defined(__OpenBSD__)
+#ifdef __OpenBSD__
 		printf("%-24s  %10llu  %10llu  %10llu  %10llu\n",
 		       langs[i].name,
 		       langs[i].files,
@@ -41,18 +41,16 @@ loc_results()
 	return 0;
 }
 
-
 int
 main(int argc, char **argv)
 {
-	static char *buffer;
-	static size_t buffer_size;
-	char *extension = "", *file_extension = "";
-	int fd, l, opt;
+	char   *buffer = NULL, *extension = NULL, *file_extension;
+	int    fd, l, opt;
+        size_t buffer_size = 0;
 
 	setlocale(LC_CTYPE, "");
 
-#if defined(__OpenBSD__)
+#ifdef __OpenBSD__
 	if (pledge("rpath stdio", NULL) == -1)
 		err(1, "pledge");
 #endif

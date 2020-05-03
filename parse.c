@@ -15,7 +15,6 @@ loc_seek(char *ext)
 		}
 	}
 
-	// No known lang matches the provided ext.
 	return -1;
 }
 
@@ -23,9 +22,8 @@ loc_seek(char *ext)
 int
 loc_parse(int i, int fd, char *buffer)
 {
-	char *character;
-	char *previous = "";
-	uint in_comment = 0;
+	char *character, *previous = "";
+	uint8_t in_comment = 0;
 	ssize_t len;
 
 	if ((len = read(fd, buffer, MAXBSIZE)) > 0) {
