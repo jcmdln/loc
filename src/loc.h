@@ -12,10 +12,10 @@
 #include <unistd.h>
 
 #ifndef MAXBSIZE
-#define MAXBSIZE 8192
+#define MAXBSIZE 8192 // very arbitrary, and likely never correct.
 #endif
 
-#ifndef uint32_t
+#ifndef uint64_t
 #include <stdint.h>
 #endif
 
