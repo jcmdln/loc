@@ -92,7 +92,6 @@ main(int argc, char **argv)
 			if (lmatch >= 0)
 				loc_parse(lmatch, fd, buf);
 
-			printf("end of main do\n");
 		} while(*++argv);
 
 		loc_results();
