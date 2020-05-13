@@ -21,7 +21,7 @@ loc_results()
 		if (langs[i].files < 1 || langs[i].name == NULL)
 			continue;
 
-#if defined(__OpenBSD__)
+#ifdef __OpenBSD__
 		printf("%-24s  %10llu  %10llu  %10llu  %10llu\n",
 		       langs[i].name,
 		       langs[i].files,
@@ -45,14 +45,17 @@ loc_results()
 int
 main(int argc, char **argv)
 {
-	static char *buffer;
-	static size_t buffer_size;
-	char *extension = "", *file_extension = "";
-	int fd, l, opt;
+        char *buf = NULL;     /* Buffer */
+	size_t buf_s = 0;     /* Buffer size */
+	char *ext = "";       /* File extension to be parsed */
+	char *fext = "";      /* Discovered file extension */
+	int fd;               /* File descriptor */
+	int lmatch;           /* Matched language extension */
+	int opt;              /* Command line option */
 
 	setlocale(LC_CTYPE, "");
 
-#if defined(__OpenBSD__)
+#ifdef __OpenBSD__
 	if (pledge("rpath stdio", NULL) == -1)
 		err(1, "pledge");
 #endif
@@ -61,7 +64,7 @@ main(int argc, char **argv)
 		switch (opt) {
 		default:
 			fprintf(stderr,
-				"usage: %s [-bcCht] [file ...]\n",
+				"usage: %s [-bcCht] [files]\n",
 				__progname);
 			return 1;
 		}
@@ -74,21 +77,23 @@ main(int argc, char **argv)
 		loc_init();
 
 		do {
-			if ((fd = open(*argv, O_RDONLY, 0)) == -1){
+			if ((fd = open(*argv, O_RDONLY, 0)) == -1) {
 				warn("%s", *argv);
 				continue;
 			}
 
-			if (buffer_size < MAXBSIZE &&
-			    (buffer = realloc(buffer, MAXBSIZE)) == NULL)
+			if (buf_s < MAXBSIZE &&
+			    (buf = realloc(buf, MAXBSIZE)) == NULL)
 				err(1, NULL);
 
-			while((file_extension = strsep(argv, ".")) != NULL)
-			        extension = file_extension;
+			while((fext = strsep(argv, ".")) != NULL)
+			        ext = fext;
 
-			l = loc_seek(extension);
-			if (l >= 0)
-				loc_parse(l, fd, buffer);
+			lmatch = loc_seek(ext);
+			if (lmatch >= 0)
+				loc_parse(lmatch, fd, buf);
+
+			printf("end of main do\n");
 		} while(*++argv);
 
 		loc_results();

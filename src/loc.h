@@ -4,6 +4,7 @@
 #include <sys/stat.h>
 
 #include <err.h>
+#include <getopt.h>
 #include <fcntl.h>
 #include <locale.h>
 #include <stdio.h>
