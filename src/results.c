@@ -3,8 +3,6 @@
  * Copyright 2020 Johnathan C. Maudlin
  */
 
-#include <inttypes.h>
-
 #include "loc.h"
 
 int
@@ -18,11 +16,10 @@ _loc_results_separator(int width)
 }
 
 int
-_loc_results_print(char *title, uint64_t files, uint64_t blank,
-		   uint64_t comment, uint64_t code)
+_loc_results_print(char *title, uint32_t files, uint32_t blank,
+		   uint32_t comment, uint32_t code)
 {
-	printf("%-24s  %10" PRIu64 "  %10" PRIu64 "  %10" PRIu64
-	       "  %10" PRIu64 "\n",
+	printf("%-24s  %10u  %10u  %10u  %10u\n",
 	       title, files, blank, comment, code);
 
 	return 0;
