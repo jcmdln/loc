@@ -1,5 +1,6 @@
 /* parse.c */
 
+#include <ctype.h>
 #include <strings.h>
 
 #include "loc.h"
@@ -9,12 +10,15 @@ loc_seek(char *ext)
 {
 	int64_t langs_s = sizeof(langs);
 
-	for (int i = 0; i < langs_s; i++) {
-		if (strncasecmp(langs[i].ext, ext, 20) == 0)
+	for (int64_t i = 0; i < langs_s; i++) {
+		if (langs[i].ext == NULL)
+			break;
+
+		if (strncasecmp(langs[i].ext, ext, 30) == 0)
 			return i;
 	}
 
-	return -1;
+        return -1;
 }
 
 int
@@ -22,44 +26,41 @@ loc_parse(int i, int fd, char *buffer)
 {
 	char *character = NULL;
 	char *previous = NULL;
-	ssize_t len = 0;
+	ssize_t len;
 	int in_comment = 0;
 
-	if ((len = read(fd, buffer, MAXBSIZE)) <= 0) {
-		/* No need to scan or count an empty file */
-		return 0;
-	}
-
 	++langs[i].files;
+
+	if ((len = read(fd, buffer, MAXBSIZE)) <= 0)
+		return 0;
 
 	for (character = buffer; len--; ++character) {
 		switch (*character) {
 		case '\n':
-			if (in_comment)
-				++langs[i].lines.comment;
-
 			if (*previous == '\n') {
 				++langs[i].lines.blank;
-			} else if (!in_comment)
+			} else if (in_comment) {
+				++langs[i].lines.comment;
+			} else {
 				++langs[i].lines.code;
-
-			++langs[i].lines.total;
+			}
 
 			break;
 
 		case '*':
-			if (*previous == '/')
+			if (!in_comment && *previous == '/')
 				in_comment = 1;
 
 			break;
 
 		case '/':
-			if (in_comment && *previous == '*') {
-				in_comment = 0;
-				++langs[i].lines.comment;
-			}
+			if (previous == NULL)
+				break;
 
-			if (in_comment != 0 && *previous == '/')
+			if (in_comment && *previous == '*')
+				in_comment = 0;
+
+			if (*previous == '*' || *previous == '/')
 				++langs[i].lines.comment;
 
 			break;

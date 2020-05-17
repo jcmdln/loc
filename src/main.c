@@ -13,10 +13,28 @@ uint32_t opt_code;
 uint32_t opt_comment;
 
 int
+_loc_separator(int width)
+{
+	for (int i = 0; i <= width; i++)
+		printf("-");
+
+	printf("\n");
+	return 0;
+}
+
+int
 loc_results()
 {
+	struct lang total;
+	total.files = 0;
+	total.lines.blank = 0;
+	total.lines.comment = 0;
+	total.lines.code = 0;
+
 	printf("%-24s  %10s  %10s  %10s  %10s\n",
 	       "language", "files", "blank", "comment", "code");
+
+	_loc_separator(72);
 
 	for (int i = 0; i <= 1; i++) {
 		if (langs[i].files < 1 || langs[i].name == NULL)
@@ -29,7 +47,22 @@ loc_results()
 		       langs[i].lines.blank,
 		       langs[i].lines.comment,
 		       langs[i].lines.code);
+
+	        total.files += langs[i].files;
+		total.lines.blank += langs[i].lines.blank;
+		total.lines.comment += langs[i].lines.comment;
+		total.lines.code += langs[i].lines.code;
 	}
+
+	_loc_separator(72);
+
+	printf("%-24s  %10" PRIu64 "  %10" PRIu64 "  %10" PRIu64
+	       "  %10" PRIu64 "\n",
+	       "total",
+	       total.files,
+	       total.lines.blank,
+	       total.lines.comment,
+	       total.lines.code);
 
 	return 0;
 }
@@ -82,6 +115,7 @@ main(int argc, char **argv)
 			        ext = fext;
 
 			lmatch = loc_seek(ext);
+
 			if (lmatch >= 0)
 				loc_parse(lmatch, fd, buf);
 
