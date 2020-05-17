@@ -1,4 +1,8 @@
-/* parse.c */
+/* parse.c
+ *
+ * Copyright 2020 Johnathan C. Maudlin
+ */
+
 
 #include <ctype.h>
 #include <strings.h>
@@ -8,9 +12,10 @@
 int
 loc_seek(char *ext)
 {
-	int64_t langs_s = sizeof(langs);
+	uint32_t langs_s = sizeof(langs) / sizeof(langs[0]);
+	uint32_t i;
 
-	for (int64_t i = 0; i < langs_s; i++) {
+	for (i = 0; i < langs_s; i++) {
 		if (langs[i].name == NULL || langs[i].ext == NULL)
 		        break;
 

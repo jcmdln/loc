@@ -1,4 +1,7 @@
-/* loc.h */
+/* loc.h
+ *
+ * Copyright 2020 Johnathan C. Maudlin
+ */
 
 #include <sys/param.h>
 #include <sys/stat.h>
@@ -22,10 +25,10 @@
 extern char *__progname;
 
 struct loc {
-	uint64_t blank;
-	uint64_t code;
-	uint64_t comment;
-	uint64_t total;
+	uint32_t blank;
+	uint32_t code;
+	uint32_t comment;
+	uint32_t total;
 };
 
 struct lang {
@@ -34,17 +37,20 @@ struct lang {
 	char *comment_single;
 	char *comment_multi_start;
 	char *comment_multi_end;
-	uint64_t files;
+	uint32_t files;
 	struct loc lines;
 };
 
-extern struct lang langs[2];
+extern struct lang langs[7];
 
 int
-loc_init();
+loc_langs_init();
 
 int
 loc_parse(int i, int fd, char *buf);
+
+int
+loc_results();
 
 int
 loc_seek(char *ext);
