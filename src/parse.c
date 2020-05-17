@@ -11,8 +11,8 @@ loc_seek(char *ext)
 	int64_t langs_s = sizeof(langs);
 
 	for (int64_t i = 0; i < langs_s; i++) {
-		if (langs[i].ext == NULL)
-			break;
+		if (langs[i].name == NULL || langs[i].ext == NULL)
+		        break;
 
 		if (strncasecmp(langs[i].ext, ext, 30) == 0)
 			return i;

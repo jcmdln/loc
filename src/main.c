@@ -38,6 +38,7 @@ int
 loc_results()
 {
 	struct lang total;
+	total.name = "Total";
 	total.files = 0;
 	total.lines.blank = 0;
 	total.lines.comment = 0;
@@ -64,7 +65,7 @@ loc_results()
 
 	_loc_results_separator(72);
 
-	_loc_results_print("total", total.files, total.lines.blank,
+	_loc_results_print(total.name, total.files, total.lines.blank,
 	       total.lines.comment, total.lines.code);
 
 	return 0;
