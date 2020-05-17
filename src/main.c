@@ -15,8 +15,8 @@ main(int argc, char **argv)
 	char *ext = "";       /* File extension to be parsed */
 	char *fext = "";      /* Discovered file extension */
 	int fd;               /* File descriptor */
-	int lmatch;           /* Matched language extension */
 	int opt;              /* Command line option */
+	int l;
 
 	setlocale(LC_CTYPE, "");
 
@@ -39,8 +39,6 @@ main(int argc, char **argv)
 	argc -= optind;
 
 	if (argc > 0) {
-		loc_langs_init();
-
 		do {
 			if ((fd = open(*argv, O_RDONLY, 0)) == -1) {
 				warn("%s", *argv);
@@ -54,11 +52,9 @@ main(int argc, char **argv)
 			while((fext = strsep(argv, ".")) != NULL)
 			        ext = fext;
 
-			lmatch = loc_seek(ext);
-
-			if (lmatch >= 0)
-				loc_parse(lmatch, fd, buf);
-
+			if ((l = loc_langs_init(ext)) >= 0) {
+				loc_parse(l, fd, buf);
+			}
 		} while(*++argv);
 
 		loc_results();

@@ -44,7 +44,7 @@ struct lang {
 extern struct lang langs[7];
 
 int
-loc_langs_init();
+loc_langs_init(char *ext);
 
 int
 loc_parse(int i, int fd, char *buf);
