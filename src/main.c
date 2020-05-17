@@ -3,6 +3,7 @@
  * Copyright 2020 Johnathan C. Maudlin <jcmdln@gmail.com>
  */
 
+#include <inttypes.h>
 #include <string.h>
 
 #include "loc.h"
@@ -21,21 +22,13 @@ loc_results()
 		if (langs[i].files < 1 || langs[i].name == NULL)
 			continue;
 
-#ifdef __OpenBSD__
-		printf("%-24s  %10llu  %10llu  %10llu  %10llu\n",
+		printf("%-24s  %10" PRIu64 "  %10" PRIu64 "  %10" PRIu64
+		       "  %10" PRIu64 "\n",
 		       langs[i].name,
 		       langs[i].files,
 		       langs[i].lines.blank,
 		       langs[i].lines.comment,
 		       langs[i].lines.code);
-#else
-		printf("%-24s  %10lu  %10lu  %10lu  %10lu\n",
-		       langs[i].name,
-		       langs[i].files,
-		       langs[i].lines.blank,
-		       langs[i].lines.comment,
-		       langs[i].lines.code);
-#endif
 	}
 
 	return 0;
