@@ -1,0 +1,18 @@
+# .gitignore
+
+# Exclude by default
+*
+
+# Allow traversing directories
+!*/
+
+# Files
+!.gitignore
+!LICENSE
+!**/README.md
+!**/meson.build
+
+# Directories
+!src/*.1
+!src/*.c
+!src/*.h
