@@ -4,8 +4,6 @@
  */
 
 #include "loc.h"
-#include <stdint.h>
-#include <strings.h>
 
 struct lang langs[7];
 
@@ -14,9 +12,9 @@ _lang_init_c(int index)
 {
 	langs[index].name = "C";
 	langs[index].ext = "c";
-	langs[index].comment_single = "//";
-	langs[index].comment_multi_start = "/*";
-	langs[index].comment_multi_end = "*/";
+	langs[index].comments.single = "//";
+	langs[index].comments.open = "/*";
+	langs[index].comments.close = "*/";
 
 	return 0;
 }
@@ -25,9 +23,9 @@ int
 _lang_init_c_header(int index) {
 	langs[index].name = "C Header";
 	langs[index].ext = "h";
-	langs[index].comment_single = "//";
-	langs[index].comment_multi_start = "/*";
-	langs[index].comment_multi_end = "*/";
+	langs[index].comments.single = "//";
+	langs[index].comments.open = "/*";
+	langs[index].comments.close = "*/";
 
 	return 0;
 }
@@ -37,9 +35,9 @@ _lang_init_cpp(int index)
 {
 	langs[index].name = "C++";
 	langs[index].ext = "cpp";
-	langs[index].comment_single = "//";
-	langs[index].comment_multi_start = "/*";
-	langs[index].comment_multi_end = "*/";
+	langs[index].comments.single = "//";
+	langs[index].comments.open = "/*";
+	langs[index].comments.close = "*/";
 
 	return 0;
 }
@@ -49,9 +47,9 @@ _lang_init_cpp_header(int index)
 {
 	langs[index].name = "C++ Header";
 	langs[index].ext = "hpp";
-	langs[index].comment_single = "//";
-	langs[index].comment_multi_start = "/*";
-	langs[index].comment_multi_end = "*/";
+	langs[index].comments.single = "//";
+	langs[index].comments.open = "/*";
+	langs[index].comments.close = "*/";
 
 	return 0;
 }
@@ -61,7 +59,7 @@ _lang_init_makefile(int index)
 {
 	langs[index].name = "Makefile";
 	langs[index].ext = "Makefile";
-        langs[index].comment_single = "#";
+        langs[index].comments.single = "#";
 
 	return 0;
 }
@@ -71,7 +69,7 @@ _lang_init_meson(int index)
 {
 	langs[index].name = "Meson";
 	langs[index].ext = "build";
-        langs[index].comment_single = "#";
+        langs[index].comments.single = "#";
 
 	return 0;
 }
@@ -81,7 +79,7 @@ _lang_init_sh(int index)
 {
 	langs[index].name = "Shell Script";
 	langs[index].ext = "sh";
-        langs[index].comment_single = "#";
+        langs[index].comments.single = "#";
 
 	return 0;
 }

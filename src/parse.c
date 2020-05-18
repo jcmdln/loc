@@ -3,10 +3,6 @@
  * Copyright 2020 Johnathan C. Maudlin
  */
 
-
-#include <ctype.h>
-#include <strings.h>
-
 #include "loc.h"
 
 int
@@ -34,7 +30,7 @@ loc_parse(int i, int fd, char *buffer)
 	ssize_t len;
 	int in_comment = 0;
 
-	++langs[i].files;
+	++langs[i].counts.files;
 
 	if ((len = read(fd, buffer, MAXBSIZE)) <= 0)
 		return 0;
@@ -43,11 +39,11 @@ loc_parse(int i, int fd, char *buffer)
 		switch (*character) {
 		case '\n':
 			if (*previous == '\n') {
-				++langs[i].lines.blank;
+				++langs[i].counts.blank;
 			} else if (in_comment) {
-				++langs[i].lines.comment;
+				++langs[i].counts.comment;
 			} else {
-				++langs[i].lines.code;
+				++langs[i].counts.code;
 			}
 
 			break;
@@ -66,7 +62,7 @@ loc_parse(int i, int fd, char *buffer)
 				in_comment = 0;
 
 			if (*previous == '*' || *previous == '/')
-				++langs[i].lines.comment;
+				++langs[i].counts.comment;
 
 			break;
 		}

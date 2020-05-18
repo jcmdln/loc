@@ -29,41 +29,40 @@ int
 loc_results()
 {
 	uint32_t langs_s = sizeof(langs) / sizeof(langs[0]);
-	uint32_t i;
 
 	struct lang total;
 	total.name = "Total";
-	total.files = 0;
-	total.lines.blank = 0;
-	total.lines.comment = 0;
-	total.lines.code = 0;
+	total.counts.files = 0;
+	total.counts.blank = 0;
+	total.counts.comment = 0;
+	total.counts.code = 0;
 
 	printf("%-24s  %10s  %10s  %10s  %10s\n",
 	       "language", "files", "blank", "comment", "code");
 
 	_loc_results_separator(72);
 
-	for (i = 0; i < langs_s; i++) {
+	for (uint32_t i = 0; i < langs_s; i++) {
 		if (langs[i].name == NULL || langs[i].ext == NULL)
 		        continue;
 
-		if (langs[i].files < 1)
+		if (langs[i].counts.files < 1)
 			continue;
 
-		_loc_results_print(langs[i].name, langs[i].files,
-		       langs[i].lines.blank, langs[i].lines.comment,
-		       langs[i].lines.code);
+		_loc_results_print(langs[i].name, langs[i].counts.files,
+		       langs[i].counts.blank, langs[i].counts.comment,
+		       langs[i].counts.code);
 
-	        total.files += langs[i].files;
-		total.lines.blank += langs[i].lines.blank;
-		total.lines.comment += langs[i].lines.comment;
-		total.lines.code += langs[i].lines.code;
+	        total.counts.files   += langs[i].counts.files;
+		total.counts.blank   += langs[i].counts.blank;
+		total.counts.comment += langs[i].counts.comment;
+		total.counts.code    += langs[i].counts.code;
 	}
 
 	_loc_results_separator(72);
 
-	_loc_results_print(total.name, total.files, total.lines.blank,
-	       total.lines.comment, total.lines.code);
+	_loc_results_print(total.name, total.counts.files, total.counts.blank,
+	       total.counts.comment, total.counts.code);
 
 	return 0;
 }

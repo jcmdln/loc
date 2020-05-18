@@ -3,8 +3,6 @@
  * Copyright 2020 Johnathan C. Maudlin
  */
 
-#include <string.h>
-
 #include "loc.h"
 
 int
