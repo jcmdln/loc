@@ -26,37 +26,49 @@
 
 extern char *__progname;
 
-struct comments {
+// comments
+struct
+comments {
 	char *single;
 	char *open;
 	char *close;
 };
 
-struct counts {
+// counts is a struct containing the count of various lines.
+struct
+counts {
 	uint32_t blank;
 	uint32_t code;
 	uint32_t comment;
 	uint32_t files;
 };
 
-struct lang {
+// lang
+struct
+lang {
 	char *name;
 	char *ext;
 	struct comments comments;
 	struct counts counts;
-	void *next;
+	struct lang *next;
 };
 
-extern struct lang langs[7];
+// langs is a linked list of initialized languages.
+extern struct lang *
+langs;
 
+// loc_langs_init
+struct lang *
+loc_langs_init(struct lang *l, char *ext);
+
+// loc_parse
 int
-loc_langs_init(char *ext);
+loc_parse(struct lang *l, int fd, char *buf);
 
-int
-loc_parse(int i, int fd, char *buf);
-
+// loc_results
 int
 loc_results();
 
+// loc_seek
 int
 loc_seek(char *ext);

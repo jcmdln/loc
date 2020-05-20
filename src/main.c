@@ -8,13 +8,15 @@
 int
 main(int argc, char **argv)
 {
+	struct lang *langs = malloc(sizeof(struct lang));
+	struct lang *cursor;
+
         char *buf = NULL;     /* Buffer */
 	size_t buf_s = 0;     /* Buffer size */
 	char *ext = "";       /* File extension to be parsed */
 	char *fext = "";      /* Discovered file extension */
 	int fd;               /* File descriptor */
 	int opt;              /* Command line option */
-	int l;
 
 	setlocale(LC_CTYPE, "");
 
@@ -23,7 +25,7 @@ main(int argc, char **argv)
 		err(1, "pledge");
 #endif
 
-	while ((opt = getopt(argc, argv, "bcCt")) != -1) {
+	while ((opt = getopt(argc, argv, "bcCt")) != -1)
 		switch (opt) {
 		default:
 			fprintf(stderr,
@@ -31,32 +33,31 @@ main(int argc, char **argv)
 				__progname);
 			return 1;
 		}
-	}
 
 	argv += optind;
 	argc -= optind;
 
-	if (argc > 0) {
-		do {
-			if ((fd = open(*argv, O_RDONLY, 0)) == -1) {
-				warn("%s", *argv);
-				continue;
-			}
+	if (argc < 1)
+		return 0;
 
-			if (buf_s < MAXBSIZE &&
-			    (buf = realloc(buf, MAXBSIZE)) == NULL)
-				err(1, NULL);
+	do {
+		if ((fd = open(*argv, O_RDONLY, 0)) == -1) {
+			warn("%s", *argv);
+			continue;
+		}
 
-			while((fext = strsep(argv, ".")) != NULL)
-			        ext = fext;
+		if (buf_s < MAXBSIZE &&
+		    (buf = realloc(buf, MAXBSIZE)) == NULL)
+			err(1, NULL);
 
-			if ((l = loc_langs_init(ext)) >= 0) {
-				loc_parse(l, fd, buf);
-			}
-		} while(*++argv);
+		while((fext = strsep(argv, ".")) != NULL)
+			ext = fext;
 
-		loc_results();
-	}
+		if ((cursor = loc_langs_init(langs, ext)) != NULL)
+			loc_parse(cursor, fd, buf);
+	} while(*++argv);
+
+	loc_results(langs);
 
 	return 0;
 }

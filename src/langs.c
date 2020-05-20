@@ -5,119 +5,56 @@
 
 #include "loc.h"
 
-struct lang langs[7];
-
-int
-_lang_init_c(int index)
+// _lang_add
+struct lang *
+_lang_add(struct lang *l, char *name, char *ext, char *comment,
+	  char *comment_open, char *comment_close)
 {
-	langs[index].name = "C";
-	langs[index].ext = "c";
-	langs[index].comments.single = "//";
-	langs[index].comments.open = "/*";
-	langs[index].comments.close = "*/";
+	struct lang *this = l;
 
-	return 0;
-}
+	while (this->next != NULL && this->ext != ext)
+		this = this->next;
 
-int
-_lang_init_c_header(int index) {
-	langs[index].name = "C Header";
-	langs[index].ext = "h";
-	langs[index].comments.single = "//";
-	langs[index].comments.open = "/*";
-	langs[index].comments.close = "*/";
-
-	return 0;
-}
-
-int
-_lang_init_cpp(int index)
-{
-	langs[index].name = "C++";
-	langs[index].ext = "cpp";
-	langs[index].comments.single = "//";
-	langs[index].comments.open = "/*";
-	langs[index].comments.close = "*/";
-
-	return 0;
-}
-
-int
-_lang_init_cpp_header(int index)
-{
-	langs[index].name = "C++ Header";
-	langs[index].ext = "hpp";
-	langs[index].comments.single = "//";
-	langs[index].comments.open = "/*";
-	langs[index].comments.close = "*/";
-
-	return 0;
-}
-
-int
-_lang_init_makefile(int index)
-{
-	langs[index].name = "Makefile";
-	langs[index].ext = "Makefile";
-        langs[index].comments.single = "#";
-
-	return 0;
-}
-
-int
-_lang_init_meson(int index)
-{
-	langs[index].name = "Meson";
-	langs[index].ext = "build";
-        langs[index].comments.single = "#";
-
-	return 0;
-}
-
-int
-_lang_init_sh(int index)
-{
-	langs[index].name = "Shell Script";
-	langs[index].ext = "sh";
-        langs[index].comments.single = "#";
-
-	return 0;
-}
-
-int
-loc_langs_init(char *ext)
-{
-	uint32_t langs_s = sizeof(langs) / sizeof(langs[0]);
-	uint32_t index = 0;
-
-	for (index = 0; index < langs_s; index++) {
-		if (langs[index].name == NULL)
-		        break;
-
-		if (strncasecmp(langs[index].ext, ext, 30) == 0)
-		        return index;
+	if (this->ext == ext) {
+		return this;
 	}
 
-	if (ext == NULL)
-		return -1;
+        this->next = malloc(sizeof(struct lang));
+	this       = this->next;
+        this->name = name;
+        this->ext  = ext;
+
+        this->comments.single = comment;
+	this->comments.open   = comment_open;
+	this->comments.close  = comment_close;
+
+	this->counts.blank    = 0;
+	this->counts.code     = 0;
+	this->counts.comment  = 0;
+	this->counts.files    = 0;
+
+        return this;
+}
+
+// loc_langs_init
+struct lang *
+loc_langs_init(struct lang *l, char *ext)
+{
+	struct lang *this = NULL;
 
 	if (strncasecmp(ext, "c", 30) == 0) {
-		_lang_init_c(index);
-	} else if (strncasecmp(ext, "cpp", 30) == 0) {
-		_lang_init_cpp(index);
+		this = _lang_add(l, "C", "c", "//", "/*", "*/");
 	} else if (strncasecmp(ext, "h", 30) == 0) {
-		_lang_init_c_header(index);
+		this = _lang_add(l, "C/C++ Header", "h", "//", "/*", "*/");
+	} else if (strncasecmp(ext, "cpp", 30) == 0) {
+		this = _lang_add(l, "C++", "cpp", "//", "/*", "*/");
 	} else if (strncasecmp(ext, "hpp", 30) == 0) {
-		_lang_init_cpp_header(index);
-	} else if (strncasecmp(ext, "Makefile", 30) == 0) {
-		_lang_init_cpp_header(index);
-	} else if (strncasecmp(ext, "build", 30) == 0) {
-		_lang_init_meson(index);
+		this = _lang_add(l, "C++ Header", "hpp", "//", "/*", "*/");
 	} else if (strncasecmp(ext, "sh", 30) == 0) {
-		_lang_init_sh(index);
-	} else {
-		return -1;
+		this = _lang_add(l, "Shell Script", "sh", "#", NULL, NULL);
+	} else if (strncasecmp(ext, "Makefile", 30) == 0) {
+		this = _lang_add(l, "Makefile", "Makefile", "#", NULL, NULL);
 	}
 
-	return index;
+	return this;
 }
