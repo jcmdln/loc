@@ -15,9 +15,8 @@ _lang_add(struct langs *lang, char *name, char *ext, char *comment,
 	while (this->next != NULL && this->ext != ext)
 		this = this->next;
 
-	if (this->ext == ext) {
+	if (this->ext == ext)
 		return this;
-	}
 
 	this->next = malloc(sizeof(struct langs));
 	this	   = this->next;
@@ -68,6 +67,7 @@ loc_langs_init(struct langs *lang, char *ext)
 				 "#", NULL, NULL);
 
 	} else if (strncasecmp(ext, "md", 30) == 0) {
+
 		/*
 		 * TODO: Markdown comment parsing is weird, and will
 		 * require a full parser rewrite.
