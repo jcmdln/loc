@@ -24,7 +24,8 @@
 #include <stdint.h>
 #endif
 
-extern char *__progname;
+extern char *
+__progname;
 
 // comments
 struct
