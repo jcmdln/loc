@@ -27,9 +27,9 @@ _loc_results_separator(int width)
 }
 
 int
-loc_results(struct lang *l)
+loc_results(struct langs *lang)
 {
-	struct lang *this = l;
+	struct langs *this = lang;
 	struct counts total = {0, 0, 0, 0};
 
 	printf("%-25s  %10s  %10s  %10s  %10s\n",
@@ -39,20 +39,20 @@ loc_results(struct lang *l)
 
 	while (this != NULL) {
 		if (this->name == NULL || this->ext == NULL  ||
-		    this->counts.files < 1) {
+		    this->count.files < 1) {
 			this = this->next;
 		        continue;
 		}
 
-		_loc_results_print(this->name, this->counts.files,
-				   this->counts.blank,
-				   this->counts.comment,
-				   this->counts.code);
+		_loc_results_print(this->name, this->count.files,
+				   this->count.blank,
+				   this->count.comment,
+				   this->count.code);
 
-	        total.files   += this->counts.files;
-		total.blank   += this->counts.blank;
-		total.comment += this->counts.comment;
-		total.code    += this->counts.code;
+	        total.files   += this->count.files;
+		total.blank   += this->count.blank;
+		total.comment += this->count.comment;
+		total.code    += this->count.code;
 
 		this = this->next;
 	}

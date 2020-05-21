@@ -8,8 +8,8 @@
 int
 main(int argc, char **argv)
 {
-	struct lang *langs = malloc(sizeof(struct lang));
-	struct lang *cursor;
+	struct langs *lang = malloc(sizeof(struct langs));
+	struct langs *cursor;
 
         char *buf = NULL;     /* Buffer */
 	size_t buf_s = 0;     /* Buffer size */
@@ -53,11 +53,11 @@ main(int argc, char **argv)
 		while((fext = strsep(argv, ".")) != NULL)
 			ext = fext;
 
-		if ((cursor = loc_langs_init(langs, ext)) != NULL)
+		if ((cursor = loc_langs_init(lang, ext)) != NULL)
 			loc_parse(cursor, fd, buf);
 	} while(*++argv);
 
-	loc_results(langs);
+	loc_results(lang);
 
 	return 0;
 }

@@ -6,27 +6,26 @@
 #include "loc.h"
 
 int
-loc_parse(struct lang *l, int fd, char *buffer)
+loc_parse(struct langs *lang, int file, char *buffer)
 {
 	char *character = NULL;
 	char *previous  = NULL;
 	ssize_t len     = 0;
 	int in_comment  = 0;
 
-	++l->counts.files;
+	++lang->count.files;
 
-	if ((len = read(fd, buffer, MAXBSIZE)) <= 0)
-		return 0;
+	len = read(file, buffer, MAXBSIZE);
 
 	for (character = buffer; len--; ++character) {
 		switch (*character) {
 		case '\n':
 			if (*previous == '\n') {
-				++l->counts.blank;
+				++lang->count.blank;
 			} else if (in_comment) {
-				++l->counts.comment;
+				++lang->count.comment;
 			} else {
-				++l->counts.code;
+				++lang->count.code;
 			}
 
 			break;
@@ -45,7 +44,7 @@ loc_parse(struct lang *l, int fd, char *buffer)
 				in_comment = 0;
 
 			if (*previous == '*' || *previous == '/')
-				++l->counts.comment;
+				++lang->count.comment;
 
 			break;
 		}

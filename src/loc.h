@@ -32,6 +32,7 @@ comments {
 	char *single;
 	char *open;
 	char *close;
+	struct comments *next;
 };
 
 // counts is a struct containing the count of various lines.
@@ -45,25 +46,25 @@ counts {
 
 // lang
 struct
-lang {
+langs {
 	char *name;
 	char *ext;
-	struct comments comments;
-	struct counts counts;
-	struct lang *next;
+	struct comments comment;
+	struct counts count;
+	struct langs *next;
 };
 
 // langs is a linked list of initialized languages.
-extern struct lang *
-langs;
+extern struct langs *
+lang;
 
 // loc_langs_init
-struct lang *
-loc_langs_init(struct lang *l, char *ext);
+struct langs *
+loc_langs_init(struct langs *lang, char *ext);
 
 // loc_parse
 int
-loc_parse(struct lang *l, int fd, char *buf);
+loc_parse(struct langs *lang, int file, char *buffer);
 
 // loc_results
 int
