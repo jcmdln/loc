@@ -1,13 +1,21 @@
-# loc
-Show statistics about Lines of Code
+# loc - Lines of Code
 
-This project is a toy meant to expand on `wc` as described in KNR to 
-act like most LoC variants in the wild.  
+`loc` is a toy project, expanding on `wc` as described in KnR.  To keep
+this project simple, `loc` will simply `++count` types of lines based
+on the file name and/or extension.
 
-loc will simply list some trivial statistics about a codebase such as
-total lines, blank lines, commented lines, and code lines.  These 
-statistics will be printed for each language that is detected.
+## Usage
 
-For simplicity, I will assume that file names and extentions are all 
-that are needed to "know" what language a file contains.  Any language 
-requiring more advanced checking will be ignored, for now at least.
+```
+$ meson build/debug --buildtype debug
+$ meson build/release --buildtype release
+$ ninja -C build/release
+$ ./build/release/loc src/* ~/.profile.d/*.sh
+language                        files       blank     comment        code
+-------------------------------------------------------------------------
+C                                   4          55          32         179
+C/C++ Header                        1          13          13          58
+Shell Script                       13          30           0         119
+-------------------------------------------------------------------------
+Total                              18          98          45         356
+```

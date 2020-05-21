@@ -2,23 +2,39 @@
 
 project(
   'loc', 'c',
-  version: '0.1.0',
-  default_options: [
-    'c_std=c11',
-    'optimization=g',
-    'warning_level=3',
-    'werror=true',
-  ]
-)
+  version: '0.1.0')
 
 cc = meson.get_compiler('c')
 
+if get_option('buildtype').startswith('debug')
+  c_args = '''
+    -Og
+    -Wall
+    -Werror
+    -Wextra
+    -Wpedantic
+  '''.split()
+endif
+
+if get_option('buildtype').startswith('release')
 c_args = '''
+  -O2
+'''.split()
+endif
+
+extra_args = '''
+  -std=c11
   -fPIC
   -fPIE
 '''.split()
 
 foreach arg : c_args
+  if cc.has_argument(arg)
+    add_project_arguments(arg, language: 'c')
+  endif
+endforeach
+
+foreach arg : extra_args
   if cc.has_argument(arg)
     add_project_arguments(arg, language: 'c')
   endif
