@@ -17,7 +17,7 @@
 #include <unistd.h>
 
 #ifndef MAXBSIZE
-#define MAXBSIZE 8192 // very arbitrary, and likely never correct.
+#define MAXBSIZE 1024 // very arbitrary, and likely never correct.
 #endif
 
 #ifndef uint32_t
@@ -33,7 +33,6 @@ comments {
 	char *single;
 	char *open;
 	char *close;
-	struct comments *next;
 };
 
 // counts is a struct containing the count of various lines.
