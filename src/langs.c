@@ -5,81 +5,57 @@
 
 #include "loc.h"
 
-// _lang_add
+// Add the definition of a language to the provided NULL pointer.
 struct langs *
-_lang_add(struct langs *lang, char *name, char *ext, char *comment,
-	  char *comment_open, char *comment_close)
+_lang_add(struct langs *lang, char *name, char *ext,
+	  char *comment, char *comment_open, char *comment_close)
 {
-	struct langs *this = lang;
+	struct langs *node = lang;
 
-	while (this->next != NULL && this->ext != ext)
-		this = this->next;
+	while (node->next != NULL && node->ext != ext)
+		node = node->next;
 
-	if (this->ext == ext)
-		return this;
+	if (node->ext == ext)
+		return node;
 
-	this->next = malloc(sizeof(struct langs));
-	this	   = this->next;
-	this->name = name;
-	this->ext  = ext;
+	node->next = malloc(sizeof(struct langs));
+	node       = node->next;
+	node->name = name;
+	node->ext  = ext;
 
-	this->comment.single = comment;
-	this->comment.open   = comment_open;
-	this->comment.close  = comment_close;
+	node->comment.single = comment;
+	node->comment.open   = comment_open;
+	node->comment.close  = comment_close;
 
-	this->count.blank    = 0;
-	this->count.code     = 0;
-	this->count.comment  = 0;
-	this->count.files    = 0;
+	node->count.blank    = 0;
+	node->count.code     = 0;
+	node->count.comment  = 0;
+	node->count.files    = 0;
 
-	return this;
+	return node;
 }
 
 // loc_langs_init
 struct langs *
 loc_langs_init(struct langs *lang, char *ext)
 {
-	struct langs *this = NULL;
+	struct langs *node = NULL;
 
 	if (strncasecmp(ext, "c", 30) == 0) {
-
-		this = _lang_add(lang, "C", "c",
-				 "//", "/*", "*/");
-
+		node = _lang_add(lang, "C", "c", "//", "/*", "*/");
 	} else if (strncasecmp(ext, "h", 30) == 0) {
-
-		this = _lang_add(lang, "C/C++ Header", "h",
-				 "//", "/*", "*/");
-
+	        node = _lang_add(lang, "C/C++ Header", "h", "//", "/*", "*/");
 	} else if (strncasecmp(ext, "cpp", 30) == 0) {
-
-		this = _lang_add(lang, "C++", "cpp",
-				 "//", "/*", "*/");
-
+		node = _lang_add(lang, "C++", "cpp", "//", "/*", "*/");
 	} else if (strncasecmp(ext, "hpp", 30) == 0) {
-
-		this = _lang_add(lang, "C++ Header", "hpp",
-				 "//", "/*", "*/");
-
+	        node = _lang_add(lang, "C++ Header", "hpp", "//", "/*", "*/");
 	} else if (strncasecmp(ext, "Makefile", 30) == 0) {
-
-		this = _lang_add(lang, "Makefile", "Makefile",
-				 "#", NULL, NULL);
-
+		node = _lang_add(lang, "Makefile", "Makefile", "#", NULL, NULL);
 	} else if (strncasecmp(ext, "md", 30) == 0) {
-
-		/*
-		 * TODO: Markdown comment parsing is weird, and will
-		 * require a full parser rewrite.
-		 */
-		this = _lang_add(lang, "Markdown", "md",
-				 NULL, NULL, NULL);
-
+		node = _lang_add(lang, "Markdown", "md", NULL, NULL, NULL);
 	} else if (strncasecmp(ext, "sh", 30) == 0) {
-
-		this = _lang_add(lang, "Shell Script", "sh",
-				 "#", NULL, NULL);
+	        node = _lang_add(lang, "Shell Script", "sh", "#", NULL, NULL);
 	}
 
-	return this;
+	return node;
 }
