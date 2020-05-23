@@ -9,9 +9,9 @@ int
 loc_parse(struct langs *lang, int file, char *buffer)
 {
 	char *character = NULL;
-	char *previous  = NULL;
-	ssize_t len     = 0;
-	int in_comment  = 0;
+	char *previous	= NULL;
+	ssize_t len	= 0;
+	int in_comment	= 0;
 
 	++lang->count.files;
 
@@ -42,8 +42,7 @@ loc_parse(struct langs *lang, int file, char *buffer)
 				if (in_comment && *previous == '*')
 					in_comment = 0;
 
-				if (*previous == '*' ||
-				    *previous == '/')
+				if (*previous == '*' || *previous == '/')
 					++lang->count.comment;
 
 				break;
