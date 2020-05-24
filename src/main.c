@@ -12,12 +12,12 @@ main(int argc, char **argv)
 	struct langs *lang = malloc(sizeof(struct langs));
 	struct langs *node = NULL;
 
-        char *buf = NULL;     /* Buffer */
+	char *buf = NULL;     /* Buffer */
 	size_t buf_s = 0;     /* Buffer size */
-	char *ext = "";       /* File extension to be parsed */
+	char *ext = "";	      /* File extension to be parsed */
 	char *fext = "";      /* Discovered file extension */
-	int fd;               /* File descriptor */
-	int opt;              /* Command line option */
+	int fd;		      /* File descriptor */
+	int opt;	      /* Command line option */
 
 	setlocale(LC_CTYPE, "");
 
