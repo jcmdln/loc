@@ -9,7 +9,7 @@ int
 _loc_results_print(char *title, uint32_t files, uint32_t blank,
 		   uint32_t comment, uint32_t code)
 {
-	printf("%-25s  %10u  %10u  %10u	 %10u\n",
+	printf("%-21s %11u %11u %11u %11u\n",
 	       title, files, blank, comment, code);
 
 	return 0;
@@ -32,10 +32,10 @@ loc_results(struct langs *lang)
 	struct langs *this = lang;
 	struct counts total = {0, 0, 0, 0};
 
-	printf("%-25s  %10s  %10s  %10s	 %10s\n",
+	printf("%-21s %11s %11s %11s %11s\n",
 	       "language", "files", "blank", "comment", "code");
 
-	_loc_results_separator(72);
+	_loc_results_separator(68);
 
 	while (this != NULL) {
 		if (this->name == NULL || this->ext == NULL  ||
@@ -57,7 +57,7 @@ loc_results(struct langs *lang)
 		this = this->next;
 	}
 
-	_loc_results_separator(72);
+	_loc_results_separator(68);
 
 	_loc_results_print("Total", total.files, total.blank,
 			   total.comment, total.code);

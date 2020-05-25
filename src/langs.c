@@ -7,19 +7,17 @@
 
 // Add the definition of a language to the provided NULL pointer.
 struct langs *
-_lang_add(struct langs *lang, char *name, char *ext,
+_lang_add(struct langs *node, char *name, char *ext,
 	  char *comment, char *comment_open, char *comment_close)
 {
-	struct langs *node = lang;
-
 	while (node != NULL && node->ext != ext && node->next != NULL)
 		node = node->next;
 
-	if (node != NULL && node->ext == ext)
+	if (node->ext == ext)
 		return node;
 
-	node->next = malloc(sizeof(struct langs));
-	node = node->next;
+	node->next	     = malloc(sizeof(struct langs));
+	node		     = node->next;
 
 	node->name	     = malloc(sizeof(name));
 	node->name	     = name;
