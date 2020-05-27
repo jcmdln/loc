@@ -8,6 +8,7 @@
 
 # Files
 !.gitignore
+!.gitlab-ci.yml
 !LICENSE
 !**/README.md
 !**/meson.build

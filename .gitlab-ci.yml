@@ -1,0 +1,57 @@
+# .gitlab-ci.yml
+
+stages:
+  - glibc
+  - musl
+
+#
+# Templates
+#
+
+.cc_template:
+  script:
+    - CC=$CC meson build --buildtype debug
+    - ninja -C ./build
+    - ./build/loc src/*
+
+#
+# Jobs
+#
+
+Test clang + glibc:
+  before_script:
+    - apt update && apt upgrade -y
+    - apt install -y clang lld meson
+  extends: .cc_template
+  image: ubuntu:20.04
+  stage: glibc
+  variables:
+    CC: clang
+
+Test gcc + glibc:
+  before_script:
+    - apt update && apt upgrade -y
+    - apt install -y gcc meson
+  extends: .cc_template
+  image: ubuntu:20.04
+  stage: glibc
+  variables:
+    CC: gcc
+
+Test clang + musl:
+  before_script:
+    - apk --no-cache add clang-dev meson lld-dev musl-dev
+  extends: .cc_template
+  image: alpine:edge
+  stage: musl
+  variables:
+    CC: gcc
+
+Test gcc + musl:
+  before_script:
+    - apk --no-cache add gcc meson musl-dev
+  extends: .cc_template
+  image: alpine:edge
+  stage: musl
+  variables:
+    CC: gcc
