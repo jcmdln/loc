@@ -1,5 +1,7 @@
 # loc - Lines of Code
 
+![pipeline](https://gitlab.com/jcmdln/loc/badges/master/pipeline.svg)
+
 `loc` is a toy project, expanding on `wc` as described in KnR.  To keep
 this project simple, `loc` will simply `++count` types of lines based
 on the file name and/or extension.
