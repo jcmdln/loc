@@ -4,6 +4,7 @@
  */
 
 #include "loc.h"
+#include <stdint.h>
 
 struct langs *
 _lang_add(struct langs *node, char *name, char *ext,
@@ -25,13 +26,9 @@ _lang_add(struct langs *node, char *name, char *ext,
 	node->comment.close  = malloc(sizeof(comment_close));
 	node->comment.close  = comment_close;
 
-        node->count.blank    = (uint32_t) malloc(sizeof(UINT32_MAX));
 	node->count.blank    = 0;
-	node->count.code     = (uint32_t) malloc(sizeof(UINT32_MAX));
 	node->count.code     = 0;
-	node->count.comment  = (uint32_t) malloc(sizeof(UINT32_MAX));
 	node->count.comment  = 0;
-	node->count.files    = (uint32_t) malloc(sizeof(UINT32_MAX));
 	node->count.files    = 0;
 
 	return node;
@@ -46,7 +43,7 @@ _lang_find(struct langs *lang, char *ext)
 		node = node->next;
 
 	if (node && node->ext && strncasecmp(ext, node->ext, 30) != 0) {
-		node->next = malloc(sizeof(struct langs));
+		node->next = (struct langs *) malloc(sizeof(struct langs));
 		node = node->next;
 	}
 
