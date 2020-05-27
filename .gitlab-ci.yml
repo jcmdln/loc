@@ -45,7 +45,7 @@ Test clang + musl:
   image: alpine:edge
   stage: musl
   variables:
-    CC: gcc
+    CC: clang
 
 Test gcc + musl:
   before_script:
