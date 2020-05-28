@@ -6,8 +6,8 @@
 #include "loc.h"
 
 int
-_loc_results_print(char *title, uint32_t files, uint32_t blank,
-		   uint32_t comment, uint32_t code)
+_results_print(char *title, uint32_t files, uint32_t blank,
+	       uint32_t comment, uint32_t code)
 {
 	printf("%-21s %11u %11u %11u %11u\n",
 	       title, files, blank, comment, code);
@@ -16,7 +16,7 @@ _loc_results_print(char *title, uint32_t files, uint32_t blank,
 }
 
 int
-_loc_results_separator(int width)
+_results_separator(int width)
 {
 	for (int i = 0; i <= width; i++)
 		printf("-");
@@ -29,38 +29,35 @@ _loc_results_separator(int width)
 int
 loc_results(struct langs *lang)
 {
-	struct langs *this = lang;
+	struct langs *node = lang;
 	struct counts total = {0, 0, 0, 0};
 
 	printf("%-21s %11s %11s %11s %11s\n",
 	       "language", "files", "blank", "comment", "code");
 
-	_loc_results_separator(68);
+	_results_separator(68);
 
-	while (this != NULL) {
-		if (this->name == NULL || this->ext == NULL  ||
-		    this->count.files < 1) {
-			this = this->next;
+	while (node) {
+		if (!node->name || !node->ext || node->count.files < 1) {
+			node = node->next;
 			continue;
 		}
 
-		_loc_results_print(this->name, this->count.files,
-				   this->count.blank,
-				   this->count.comment,
-				   this->count.code);
+		_results_print(node->name, node->count.files, node->count.blank,
+			       node->count.comment, node->count.code);
 
-		total.files   += this->count.files;
-		total.blank   += this->count.blank;
-		total.comment += this->count.comment;
-		total.code    += this->count.code;
+		total.files   += node->count.files;
+		total.blank   += node->count.blank;
+		total.comment += node->count.comment;
+		total.code    += node->count.code;
 
-		this = this->next;
+		node = node->next;
 	}
 
-	_loc_results_separator(68);
+	_results_separator(68);
 
-	_loc_results_print("Total", total.files, total.blank,
-			   total.comment, total.code);
+	_results_print("Total", total.files, total.blank, total.comment,
+		       total.code);
 
 	return 0;
 }
