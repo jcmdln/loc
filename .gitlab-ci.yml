@@ -7,61 +7,51 @@ stages:
 # Templates
 #
 
-.build:
-  script:
-    - CC=$CC meson build --buildtype debug
-    - ninja -C ./build
-    - ./build/loc src/*
-
 .debug:
   stage: debug
-
-.release:
-  stage: release
-
+  script:
+    - CC=$CC CC_LD=$LD meson build/debug --buildtype debug
+    - ninja -C ./build/debug
+    - ./build/debug/loc src/*
 
 #
 # Jobs
 #
 
-Test clang + glibc:
-  before_script:
-    - apt update && apt upgrade -y
-    - apt install -y clang lld meson
-  extends:
-    - .build
-    - .debug
+glibc-clang-lld:
+  extends: .debug
   image: ubuntu:20.04
   variables:
     CC: clang
-
-Test gcc + glibc:
+    LD: lld
   before_script:
-    - apt update && apt upgrade -y
-    - apt install -y gcc meson
-  extends:
-    - .build
-    - .debug
+    - apt update
+    - apt install -y clang lld meson
+
+glibc-gcc-bfd:
+  extends: .debug
   image: ubuntu:20.04
   variables:
     CC: gcc
-
-Test clang + musl:
+    LD: bfd
   before_script:
-    - apk --no-cache add clang gcc meson musl-dev
-  extends:
-    - .build
-    - .debug
+    - apt update
+    - apt install -y gcc meson
+
+musl-clang-lld:
+  extends: .debug
   image: alpine:edge
   variables:
     CC: clang
+    CC_LD: lld
+  before_script:
+    - apk --no-cache add clang gcc lld meson musl-dev
 
-Test gcc + musl:
+musl-gcc-bfd:
+  extends: .debug
+  image: alpine:edge
+  variables:
+    CC: gcc
+    CC_LD: bfd
   before_script:
     - apk --no-cache add gcc meson musl-dev
-  extends:
-    - .build
-    - .debug
-  image: alpine:edge
-  variables:
-    CC: gcc
