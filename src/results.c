@@ -18,7 +18,9 @@ _results_print(char *title, uint32_t files, uint32_t blank,
 int
 _results_separator(int width)
 {
-	for (int i = 0; i <= width; i++)
+	int i;
+
+	for (i = 0; i <= width; i++)
 		printf("-");
 
 	printf("\n");

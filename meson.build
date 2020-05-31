@@ -23,7 +23,7 @@ c_args = '''
 endif
 
 extra_args = '''
-  -std=c11
+  -std=c89
   -fPIC
   -fPIE
 '''.split()
