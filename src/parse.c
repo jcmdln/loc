@@ -5,13 +5,12 @@
 
 #include "loc.h"
 
-int
-loc_parse(struct langs *lang, int file, char *buffer)
+int loc_parse(struct langs *lang, int file, char *buffer)
 {
 	char *character = NULL;
-	char *previous	= NULL;
-	ssize_t len	= 0;
-	int in_comment	= 0;
+	char *previous = NULL;
+	ssize_t len = 0;
+	int in_comment = 0;
 
 	++lang->count.files;
 

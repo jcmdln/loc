@@ -8,8 +8,8 @@
 
 #include <ctype.h>
 #include <err.h>
-#include <getopt.h>
 #include <fcntl.h>
+#include <getopt.h>
 #include <locale.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -24,14 +24,12 @@
 #include <stdint.h>
 #endif
 
-extern char *
-__progname;
+extern char *__progname;
 
 /*
  * comments
  */
-struct
-comments {
+struct comments {
 	char *single;
 	char *open;
 	char *close;
@@ -40,8 +38,7 @@ comments {
 /*
  * counts is a struct containing the count of various lines of code.
  */
-struct
-counts {
+struct counts {
 	uint32_t blank;
 	uint32_t code;
 	uint32_t comment;
@@ -52,8 +49,7 @@ counts {
  * langs is a struct containing the definition of a language, including
  * its rules for parsing comments and counts of lines of code.
  */
-struct
-langs {
+struct langs {
 	char *name;
 	char *ext;
 	struct comments comment;
@@ -61,17 +57,12 @@ langs {
 	struct langs *next;
 };
 
-extern struct langs *
-lang;
+extern struct langs *lang;
 
-struct langs *
-loc_langs_init(struct langs *lang, char *ext);
+struct langs *loc_langs_init(struct langs *lang, char *ext);
 
-int
-loc_parse(struct langs *lang, int file, char *buffer);
+int loc_parse(struct langs *lang, int file, char *buffer);
 
-int
-loc_results();
+int loc_results();
 
-int
-loc_seek(char *ext);
+int loc_seek(char *ext);

@@ -6,36 +6,34 @@
 #include "loc.h"
 #include <stdint.h>
 
-struct langs *
-_lang_add(struct langs *node, char *name, char *ext,
-	  char *comment, char *comment_open, char *comment_close)
+struct langs *_lang_add(struct langs *node, char *name, char *ext,
+    char *comment, char *comment_open, char *comment_close)
 {
 	if (!node)
 		node = malloc(sizeof(struct langs));
 
-	node->name	     = malloc(sizeof(name));
-	node->name	     = name;
+	node->name = malloc(sizeof(name));
+	node->name = name;
 
-        node->ext	     = malloc(sizeof(ext));
-	node->ext	     = ext;
+	node->ext = malloc(sizeof(ext));
+	node->ext = ext;
 
-        node->comment.single = malloc(sizeof(comment));
+	node->comment.single = malloc(sizeof(comment));
 	node->comment.single = comment;
-	node->comment.open   = malloc(sizeof(comment_open));
-	node->comment.open   = comment_open;
-	node->comment.close  = malloc(sizeof(comment_close));
-	node->comment.close  = comment_close;
+	node->comment.open = malloc(sizeof(comment_open));
+	node->comment.open = comment_open;
+	node->comment.close = malloc(sizeof(comment_close));
+	node->comment.close = comment_close;
 
-	node->count.blank    = 0;
-	node->count.code     = 0;
-	node->count.comment  = 0;
-	node->count.files    = 0;
+	node->count.blank = 0;
+	node->count.code = 0;
+	node->count.comment = 0;
+	node->count.files = 0;
 
 	return node;
 }
 
-struct langs *
-_lang_find(struct langs *lang, char *ext)
+struct langs *_lang_find(struct langs *lang, char *ext)
 {
 	struct langs *node = lang;
 
@@ -43,15 +41,14 @@ _lang_find(struct langs *lang, char *ext)
 		node = node->next;
 
 	if (node && node->ext && strncasecmp(ext, node->ext, 30) != 0) {
-		node->next = (struct langs *) malloc(sizeof(struct langs));
+		node->next = (struct langs *)malloc(sizeof(struct langs));
 		node = node->next;
 	}
 
 	return node;
 }
 
-struct langs *
-loc_langs_init(struct langs *lang, char *ext)
+struct langs *loc_langs_init(struct langs *lang, char *ext)
 {
 	struct langs *node = NULL;
 

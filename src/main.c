@@ -5,19 +5,17 @@
 
 #include "loc.h"
 
-int
-main(int argc, char **argv)
+int main(int argc, char **argv)
 {
-
 	struct langs *lang = malloc(sizeof(struct langs));
 	struct langs *node = NULL;
 
-	char *buf = NULL;     /* Buffer */
-	size_t buf_s = 0;     /* Buffer size */
-	char *ext = "";	      /* File extension to be parsed */
-	char *fext = "";      /* Discovered file extension */
-	int fd;		      /* File descriptor */
-	int opt;	      /* Command line option */
+	char *buf = NULL; /* Buffer */
+	size_t buf_s = 0; /* Buffer size */
+	char *ext = "";	  /* File extension to be parsed */
+	char *fext = "";  /* Discovered file extension */
+	int fd;		  /* File descriptor */
+	int opt;	  /* Command line option */
 
 	setlocale(LC_CTYPE, "");
 
@@ -29,9 +27,8 @@ main(int argc, char **argv)
 	while ((opt = getopt(argc, argv, "bcCt")) != -1)
 		switch (opt) {
 		default:
-			fprintf(stderr,
-				"usage: %s [-bcCht] [files]\n",
-				__progname);
+			fprintf(
+			    stderr, "usage: %s [-bcCht] [files]\n", __progname);
 			return 1;
 		}
 
@@ -47,11 +44,10 @@ main(int argc, char **argv)
 			continue;
 		}
 
-		if (buf_s < MAXBSIZE &&
-		    (buf = realloc(buf, MAXBSIZE)) == NULL)
+		if (buf_s < MAXBSIZE && (buf = realloc(buf, MAXBSIZE)) == NULL)
 			err(1, NULL);
 
-		while((fext = strsep(argv, ".")) != NULL)
+		while ((fext = strsep(argv, ".")) != NULL)
 			ext = fext;
 
 		if ((node = loc_langs_init(lang, ext)) != NULL)
@@ -59,7 +55,7 @@ main(int argc, char **argv)
 
 		if (close(fd) != 0)
 			err(1, NULL);
-	} while(*++argv);
+	} while (*++argv);
 
 	loc_results(lang);
 

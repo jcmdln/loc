@@ -1,0 +1,10 @@
+---
+BasedOnStyle: WebKit
+
+AlignTrailingComments: true
+ColumnLimit: 80
+ContinuationIndentWidth: 4
+IndentWidth: 8
+PointerAlignment: Right
+TabWidth: 8
+UseTab: Always
