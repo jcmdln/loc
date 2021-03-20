@@ -1,52 +1,52 @@
 # meson.build
 
 project(
-  'loc', 'c',
-  version: '0.1.0')
-
-cc = meson.get_compiler('c')
+  'loc',
+  'c',
+  default_options: ['c_std=c18'],
+  license: 'ISC',
+  meson_version: '>=0.53.0',
+  version: '0.1.0',
+)
 
 if get_option('buildtype').startswith('debug')
-  c_args = '''
-    -Og
-    -Wall
-    -Werror
-    -Wextra
-    -Wpedantic
-  '''.split()
+  build_options = [
+    'optimization=g',
+    'strip=false',
+    'warning_level=3',
+    'werror=true',
+    'b_lto=false',
+    'b_pie=false',
+    'b_sanitize=undefined',
+  ]
 endif
 
 if get_option('buildtype').startswith('release')
-c_args = '''
-  -O2
-'''.split()
+  build_options = [
+    'optimization=3',
+    'strip=true',
+    'warning_level=0',
+    'werror=false',
+    'b_lto=true',
+    'b_pie=true',
+    'b_sanitize=none',
+  ]
 endif
 
-extra_args = '''
-  -std=c89
-  -fPIC
-  -fPIE
-'''.split()
-
-foreach arg : c_args
-  if cc.has_argument(arg)
-    add_project_arguments(arg, language: 'c')
-  endif
-endforeach
-
-foreach arg : extra_args
-  if cc.has_argument(arg)
-    add_project_arguments(arg, language: 'c')
-  endif
-endforeach
-
+cc = meson.get_compiler('c')
 add_project_arguments('-D_DEFAULT_SOURCE', language: 'c')
 
-subdir('src')
-includes = include_directories('src')
+loc_sources = [
+  'src/loc.h',
+  'src/main.c',
+  'src/langs.c',
+  'src/parse.c',
+  'src/results.c',
+]
 
 executable(
-  'loc', loc_sources,
-  include_directories: includes,
-  install: false
+  'loc',
+  loc_sources,
+  install: false,
+  override_options: build_options,
 )

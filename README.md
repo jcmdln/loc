@@ -1,12 +1,11 @@
-# loc - Lines of Code
+`loc` is a toy project, expanding on `wc` as described in KnR.  To keep this
+project simple, `loc` will simply `++count` types of lines based on the file
+name and/or extension.
 
-[![pipeline](https://gitlab.com/jcmdln/loc/badges/master/pipeline.svg)](https://gitlab.com/jcmdln/loc/pipelines)
 
-`loc` is a toy project, expanding on `wc` as described in KnR.  To keep
-this project simple, `loc` will simply `++count` types of lines based
-on the file name and/or extension.
-
-## Usage
+Usage
+==========
+Optionally set `CC` and/or `CC_LD` if you have a preference.
 
 ```
 $ meson build/debug --buildtype debug

@@ -1,15 +1,12 @@
-/* results.c
- *
- * Copyright 2020 Johnathan C. Maudlin
- */
+// results.c
 
 #include "loc.h"
 
 int _results_print(char *title, uint32_t files, uint32_t blank,
-    uint32_t comment, uint32_t code)
+		   uint32_t comment, uint32_t code)
 {
-	printf(
-	    "%-21s %11u %11u %11u %11u\n", title, files, blank, comment, code);
+	printf("%-21s %11u %11u %11u %11u\n", title, files, blank, comment,
+	       code);
 
 	return 0;
 }
@@ -32,7 +29,7 @@ int loc_results(struct langs *lang)
 	struct counts total = { 0, 0, 0, 0 };
 
 	printf("%-21s %11s %11s %11s %11s\n", "language", "files", "blank",
-	    "comment", "code");
+	       "comment", "code");
 
 	_results_separator(68);
 
@@ -43,7 +40,7 @@ int loc_results(struct langs *lang)
 		}
 
 		_results_print(node->name, node->count.files, node->count.blank,
-		    node->count.comment, node->count.code);
+			       node->count.comment, node->count.code);
 
 		total.files += node->count.files;
 		total.blank += node->count.blank;
@@ -55,8 +52,8 @@ int loc_results(struct langs *lang)
 
 	_results_separator(68);
 
-	_results_print(
-	    "Total", total.files, total.blank, total.comment, total.code);
+	_results_print("Total", total.files, total.blank, total.comment,
+		       total.code);
 
 	return 0;
 }

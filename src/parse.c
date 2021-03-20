@@ -1,7 +1,4 @@
-/* parse.c
- *
- * Copyright 2020 Johnathan C. Maudlin
- */
+// parse.c
 
 #include "loc.h"
 

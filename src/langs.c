@@ -4,25 +4,18 @@
  */
 
 #include "loc.h"
-#include <stdint.h>
 
 struct langs *_lang_add(struct langs *node, char *name, char *ext,
-    char *comment, char *comment_open, char *comment_close)
+			char *comment, char *comment_open, char *comment_close)
 {
 	if (!node)
 		node = malloc(sizeof(struct langs));
 
-	node->name = malloc(sizeof(name));
 	node->name = name;
-
-	node->ext = malloc(sizeof(ext));
 	node->ext = ext;
 
-	node->comment.single = malloc(sizeof(comment));
 	node->comment.single = comment;
-	node->comment.open = malloc(sizeof(comment_open));
 	node->comment.open = comment_open;
-	node->comment.close = malloc(sizeof(comment_close));
 	node->comment.close = comment_close;
 
 	node->count.blank = 0;
@@ -35,17 +28,17 @@ struct langs *_lang_add(struct langs *node, char *name, char *ext,
 
 struct langs *_lang_find(struct langs *lang, char *ext)
 {
-	struct langs *node = lang;
+	size_t buf_s = 20;
 
-	while (node && node->next && strncasecmp(ext, node->ext, 30) != 0)
-		node = node->next;
+	while (lang && lang->next && strncasecmp(ext, lang->ext, buf_s) != 0)
+		lang = lang->next;
 
-	if (node && node->ext && strncasecmp(ext, node->ext, 30) != 0) {
-		node->next = (struct langs *)malloc(sizeof(struct langs));
-		node = node->next;
+	if (lang && lang->ext && strncasecmp(ext, lang->ext, buf_s) != 0) {
+		lang->next = malloc(sizeof(struct langs));
+		lang = lang->next;
 	}
 
-	return node;
+	return lang;
 }
 
 struct langs *loc_langs_init(struct langs *lang, char *ext)
