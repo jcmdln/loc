@@ -1,9 +1,6 @@
 // loc.c
 
 #include "loc.h"
-#include <stdint.h>
-#include <stdlib.h>
-#include <strings.h>
 
 struct comments {
 	char *single;
@@ -26,16 +23,14 @@ struct langs {
 	struct langs *	next;
 };
 
-void	      lang_add(struct langs *lang, char *name, char *ext, char *comment,
-	     char *comment_open, char *comment_close);
-struct langs *lang_find(struct langs *lang, char *ext);
-void	      lang_parse(struct langs *lang, int fd, char *buf);
-void	      loc_results(struct langs *lang);
-void	      _safe_add_u32_to_p(uint32_t a, uint32_t *b);
-void	      _safe_inc_u32(uint32_t *counter);
-void	      _results_print(char *title, uint32_t files, uint32_t lines_blank,
-	     uint32_t lines_comment, uint32_t lines_code);
-void	      _results_separator(int width);
+void	      lang_add(struct langs *, char *, char *, char *, char *, char *);
+struct langs *lang_find(struct langs *, char *);
+void	      lang_parse(struct langs *, int, char *);
+void	      loc_results(struct langs *);
+void	      _safe_add_u32_to_p(uint32_t, uint32_t *);
+void	      _safe_inc_u32(uint32_t *);
+void	      _results_print(char *, uint32_t, uint32_t, uint32_t, uint32_t);
+void	      _results_separator(int);
 
 int
 main(int argc, char **argv)
@@ -95,7 +90,8 @@ main(int argc, char **argv)
 			err(1, NULL);
 	} while (*++argv);
 
-	loc_results(lang);
+	if (lang && lang->name)
+		loc_results(lang);
 
 	if (buf)
 		free(buf);
