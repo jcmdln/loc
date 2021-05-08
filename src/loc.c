@@ -2,48 +2,48 @@
 
 #include "loc.h"
 
-struct comments {
+typedef struct loc_comments {
 	char *single;
 	char *open;
 	char *close;
-};
+} loc_comments;
 
-struct counts {
+typedef struct loc_counts {
 	uint32_t blank;
 	uint32_t code;
 	uint32_t comment;
 	uint32_t files;
-};
+} loc_counts;
 
-struct langs {
-	char *		name;
-	char *		ext;
-	struct comments comment;
-	struct counts	count;
-	struct langs *	next;
-};
+typedef struct loc_langs {
+	char *name;
+	char *ext;
+	loc_comments comment;
+	loc_counts count;
+	struct loc_langs *next;
+} loc_langs;
 
-void	      lang_add(struct langs *, char *, char *, char *, char *, char *);
-struct langs *lang_find(struct langs *, char *);
-void	      lang_parse(struct langs *, int, char *);
-void	      loc_results(struct langs *);
-void	      _safe_add_u32_to_p(uint32_t, uint32_t *);
-void	      _safe_inc_u32(uint32_t *);
-void	      _results_print(char *, uint32_t, uint32_t, uint32_t, uint32_t);
-void	      _results_separator(int);
+void lang_add(loc_langs *, char *, char *, char *, char *, char *);
+loc_langs *lang_find(loc_langs *, char *);
+void lang_parse(loc_langs *, int, char *);
+void loc_results(loc_langs *);
+void _add_u32_to_p(uint32_t, uint32_t *);
+void _inc_u32_p(uint32_t *);
+void _results_print(char *, uint32_t, uint32_t, uint32_t, uint32_t);
+void _results_separator(int);
 
 int
 main(int argc, char **argv)
 {
-	struct langs *lang = NULL;
-	struct langs *node = NULL;
+	loc_langs *lang = NULL;
+	loc_langs *node = NULL;
 
-	char * buf = NULL;
+	char *buf = NULL;
 	size_t buf_s = 0;
-	char * ext = NULL;
-	char * ext_f = NULL;
-	int    fd = 0;
-	int    opt = 0;
+	char *ext = NULL;
+	char *ext_f = NULL;
+	int fd = 0;
+	int opt = 0;
 
 #ifdef __OpenBSD__
 	if (pledge("rpath stdio", NULL) == -1)
@@ -66,10 +66,8 @@ main(int argc, char **argv)
 		return EXIT_FAILURE;
 	}
 
-	lang = malloc(sizeof(struct langs));
-	lang->name = NULL;
-	lang->ext = NULL;
-	lang->next = NULL;
+	lang = malloc(sizeof(loc_langs));
+	lang_add(lang, NULL, NULL, NULL, NULL, NULL);
 
 	do {
 		if ((fd = open(*argv, O_RDONLY, 0)) == -1) {
@@ -97,7 +95,7 @@ main(int argc, char **argv)
 		free(buf);
 
 	if (lang) {
-		struct langs *l, *h = NULL;
+		loc_langs *l, *h = NULL;
 		for (l = lang; l != NULL; l = h) {
 			h = l->next;
 			free(l);
@@ -108,7 +106,7 @@ main(int argc, char **argv)
 }
 
 void
-lang_add(struct langs *lang, char *name, char *ext, char *comment,
+lang_add(loc_langs *lang, char *name, char *ext, char *comment,
     char *comment_open, char *comment_close)
 {
 	lang->name = name;
@@ -123,15 +121,15 @@ lang_add(struct langs *lang, char *name, char *ext, char *comment,
 	lang->next = NULL;
 }
 
-struct langs *
-lang_find(struct langs *lang, char *ext)
+loc_langs *
+lang_find(loc_langs *lang, char *ext)
 {
 	while (lang->ext) {
 		if (strncasecmp(ext, lang->ext, MAXBSIZE) == 0)
 			return lang;
 
 		if (!lang->next) {
-			lang->next = malloc(sizeof(struct langs));
+			lang->next = malloc(sizeof(loc_langs));
 			lang = lang->next;
 			break;
 		}
@@ -154,28 +152,33 @@ lang_find(struct langs *lang, char *ext)
 }
 
 void
-lang_parse(struct langs *lang, int fd, char *buf)
+lang_parse(loc_langs *lang, int fd, char *buf)
 {
-	ssize_t buf_l = 0;
-	size_t	buf_s = MAXBSIZE;
-	char *	char_cur = NULL;
-	char *	char_prev = NULL;
-	// bool	in_comment = false;
-	// bool	in_newline = true;
+	ssize_t buf_s = 0;
+	char *char_cur = NULL;
+	char *char_prev = NULL;
 
-	_safe_inc_u32(&lang->count.files);
+	_inc_u32_p(&lang->count.files);
 
-	while ((buf_l = read(fd, buf, buf_s)) > 0) {
-		for (char_cur = buf; buf_l--; ++char_cur) {
+	while ((buf_s = read(fd, buf, MAXBSIZE)) > 0)
+		for (char_cur = buf; buf_s--; ++char_cur) {
+			switch (*char_cur) {
+			case '\n':
+				if (*char_prev == '\n')
+					_inc_u32_p(&lang->count.blank);
+				else
+					_inc_u32_p(&lang->count.code);
+				break;
+			}
+
 			char_prev = char_cur;
 		}
-	}
 }
 
 void
-loc_results(struct langs *lang)
+loc_results(loc_langs *lang)
 {
-	struct counts total = {0, 0, 0, 0};
+	loc_counts total = {0, 0, 0, 0};
 
 	printf("%-21s %11s %11s %11s %11s\n", "language", "files", "blank",
 	    "comment", "code");
@@ -186,10 +189,10 @@ loc_results(struct langs *lang)
 		_results_print(lang->name, lang->count.files, lang->count.blank,
 		    lang->count.comment, lang->count.code);
 
-		_safe_add_u32_to_p(lang->count.files, &total.files);
-		_safe_add_u32_to_p(lang->count.blank, &total.blank);
-		_safe_add_u32_to_p(lang->count.comment, &total.comment);
-		_safe_add_u32_to_p(lang->count.code, &total.code);
+		_add_u32_to_p(lang->count.files, &total.files);
+		_add_u32_to_p(lang->count.blank, &total.blank);
+		_add_u32_to_p(lang->count.comment, &total.comment);
+		_add_u32_to_p(lang->count.code, &total.code);
 
 		lang = lang->next;
 	}
@@ -201,11 +204,29 @@ loc_results(struct langs *lang)
 }
 
 void
-_results_print(char *title, uint32_t files, uint32_t lines_blank,
-    uint32_t lines_comment, uint32_t lines_code)
+_add_u32_to_p(uint32_t a, uint32_t *b)
 {
-	printf("%-21s %11u %11u %11u %11u\n", title, files, lines_blank,
-	    lines_comment, lines_code);
+	if (*b > UINT32_MAX - a)
+		err(1, NULL);
+	else
+		*b += a;
+}
+
+void
+_inc_u32_p(uint32_t *counter)
+{
+	if (*counter > UINT32_MAX - 1)
+		err(1, NULL);
+	else
+		++*counter;
+}
+
+void
+_results_print(char *title, uint32_t files, uint32_t blank, uint32_t comment,
+    uint32_t code)
+{
+	printf("%-21s %11u %11u %11u %11u\n", title, files, blank, comment,
+	    code);
 }
 
 void
@@ -215,22 +236,4 @@ _results_separator(int width)
 		printf("-");
 
 	printf("\n");
-}
-
-void
-_safe_add_u32_to_p(uint32_t a, uint32_t *b)
-{
-	if (*b > UINT32_MAX - a)
-		err(1, NULL);
-	else
-		*b += a;
-}
-
-void
-_safe_inc_u32(uint32_t *counter)
-{
-	if (*counter > UINT32_MAX - 1)
-		err(1, NULL);
-	else
-		++*counter;
 }

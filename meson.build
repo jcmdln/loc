@@ -10,7 +10,7 @@ project(
     'b_pie=false',
     'b_sanitize=address,undefined',
     'buildtype=debug',
-    'c_std=c17',
+    'c_std=c2x',
     'debug=true',
     'optimization=0',
     'strip=false',
